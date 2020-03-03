@@ -1,0 +1,141 @@
+/* *********** Estilos index.html************** */
+
+.not-visible{
+    display: none;
+}
+
+.section_index {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    align-content: center;
+    height: 100vh;
+}
+
+.form_index {
+    grid-column: 2/3;
+}
+
+.input_pass {
+    margin-top: 3em;
+    margin-bottom: 3em;
+}
+
+
+/* *********** Estilos index1.html************* */
+/* Grilla sección principal*/
+.section_index1 {
+    display: grid;
+    grid-template-columns: 2fr 2fr 4fr ;
+    grid-template-rows: 1fr 9fr;
+    grid-gap: 3em 3em;
+
+}
+
+/* Grilla navbar*/
+nav {
+    padding: 1em 3em;
+    display: grid;
+    grid-gap: 27em;
+    grid-column: 1/4;
+    grid-row: 1/2;
+    grid-template-columns: 4fr 1fr;
+    background-color: rgb(225, 213, 242);
+}
+
+/* Grilla <aside>*/
+
+aside{
+    background-color: rgb(225, 213, 242);
+    display: grid;
+    align-items: center;
+    font-weight: bold;
+    color: #333;
+}
+
+ aside > ul {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(4, 1fr);
+    grid-gap: 5em;
+    margin-bottom: 0!important;
+    background-color: rgb(225, 213, 242);
+} 
+ 
+/* Grilla <form> */
+
+.form_index1 {
+    display: grid;
+    /* align-items: center; */
+    /* grid-auto-flow: row; */
+    background-color: rgb(225, 213, 242);
+}
+
+
+/* Grilla tabla*/
+
+.info {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border: 1px solid #d8d6d6;
+    margin-left: 3em;
+    margin-right: 6em;
+    text-align: center;
+    background-color: rgb(225, 213, 242);
+}
+
+.thead {
+    border-bottom: 1px solid #d8d6d6;
+    font-weight: bold;
+    padding-top: 1em;;
+}
+
+.info > span {
+    padding: 0.5em; 
+    /* border-left: 1px solid #000; */
+    /* border-bottom: 1px solid #000; */
+}
+
+/* Eliminando estilos por defecto de los enlaces <a>*/
+a {
+    text-decoration: none!important;
+}
+
+a:link, :visited, :active, :hover {color:#333!important;}
+
+/* Eliminando viñetas de los elementos de <ul>*/ 
+ul {
+    list-style:none;
+}
+
+.css-form input.ng-invalid.ng-touched {
+    background-color: #FA787E;
+  }
+
+  .css-form input.ng-valid.ng-touched {
+    background-color: #78FA89;
+  }
+
+  input#name, input#apellido, input#rut{
+      width: 70%;
+  }
+
+  .form-group{
+    display: grid;
+    justify-items: center;
+    align-items: center;
+  }
+
+  .div_buttons{
+      display: flex;
+      justify-content: center;
+  }
+
+  .div_buttons button{
+    height: min-content;
+    margin-left: .5rem;
+    margin-right: .5rem;
+}
+
+  
+
+
