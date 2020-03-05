@@ -1,0 +1,148 @@
+<style type="text/css">
+    .table-scroll {
+        position: relative;
+        height: 600px;
+        overflow: auto;
+        display: block;
+    }
+
+    .contenerdorList {
+        padding: 5% 2%;
+    }
+</style>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <h1>Registro de Vehiculos</h1>
+            <div class="card mx-auto" style="width: 350px;">
+                <div class="card-body">
+                    <div class="form-group">
+                        <input type="text" ng-model="newVehiculo.patente" class="form-control" placeholder="Patente">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" ng-model="newVehiculo.marca" class="form-control" placeholder="Marca">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" ng-model="newVehiculo.modelo" class="form-control" placeholder="Modelo">
+                    </div>
+                    <div class="form-group">
+                        <label>Tipo Vehiculo</label>
+                        <select ng-model="newVehiculo.tipoVehiculo" id="selectTipoVehiculo" class="custom-select">
+                            <option value="0">Seleccione</option>
+                            <option ng-repeat ="tipo in tipoVehiculos" value="{{tipo.tipo}}"> {{tipo.nombre}}</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Tipo Combustible</label>
+                        <select ng-model="newVehiculo.tipoCombustible" id="selectTipoCombustible" class="custom-select">
+                            <option value="0">Seleccione</option>
+                            <option ng-repeat="combustible in tipoCombustible" value="{{combustible.tipo}}"> {{combustible.nombre}}</option>
+                        </select>
+                    </div>
+                    <div class="form-group row">
+                        <div class="form-group col-md-6">
+                            <button ng-click="registrar()" class=" btn btn-block btn-success">Guardar</button>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <button ng-click="limpiar()" class="btn btn btn-block btn-primary">Limpiar</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            Listado de Vehiculos
+            <div class="row">
+                <div class="form-group col-md-4">
+                    <label>Todos </label> <input class="custom-radio" type="radio" name="viewOnly" id="" checked>
+                </div>
+                <div class="form-group col-md-4">
+                    <label>Disponibles </label> <input class="custom-radio" type="radio" name="viewOnly" id="">
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="">Asignados </label> <input class="custom-radio" type="radio" name="viewOnly" id="">
+                </div>
+
+            </div>
+            <div class="contenerdorList">
+                <table class="table table-hover table-responsive-lg">
+                    <thead>
+                        <td> Patente </td>
+                        <td> Marca </td>
+                        <td> Modelo </td>
+                        <td> Opciones </td>
+                    </thead>
+                    <tbody class="">
+                        <tr ng-repeat="vehiculo in listVehiculos">
+                            <td>{{vehiculo.patente}}</td>
+                            <td>{{vehiculo.marca}}</td>
+                            <td>{{vehiculo.modelo}}</td>
+                            <td class="row">
+                                <div class="form-group col-md-4">
+                                    <button ng-click="editarVehiculo(vehiculo)" data-toggle="modal"
+                                        data-target="#modalEditVehiculo"
+                                        class="btn btn-block btn-primary">Editar</button>
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <button class="btn btn-block btn-dark">Detalles</button>
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <button ng-click="eliminarVehiculo(vehiculo.patente)"
+                                        class="btn btn-block btn-warning">Eliminar</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modalEditVehiculo" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">
+                    Editar Vehiculo {{vehiculoSelected.patente}}
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Marca</label>
+                    <input class="form-control" ng-model="vehiculoSelected.marca" type="text" name="marca" id="marca"
+                        value="{{vehiculoSelected.marca}}">
+                </div>
+                <div class="form-group">
+                    <label for="">Modelo</label>
+                    <input class="form-control" ng-model="vehiculoSelected.modelo" type="text" name="modelo" id="modelo"
+                        value="{{vehiculoSelected.modelo}}">
+                </div>
+                <div class="form-group">
+                    <label>Tipo Vehiculo</label>
+                    <select  class="custom-select" id="editTipoVehiculo">
+                        <option ng-repeat ="tipo in tipoVehiculos" value="{{tipo.tipo}}"> {{tipo.nombre}}</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Tipo Combustible</label>
+                    <select class="custom-select" id="editTipoCombustible" >
+                        <option ng-repeat="combustible in tipoCombustible" value="{{combustible.tipo}}"> {{combustible.nombre}}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" ng-click="guardarModificacion()" class="btn btn-primary">Save
+                    changes</button>
+            </div>
+        </div>
+    </div>
+</div>
