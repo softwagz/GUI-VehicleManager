@@ -11,7 +11,7 @@
     }
 </style>
 
-<div class="container">
+<div class="container-fluid animated fadeInRight" id="mainVehiculos" ng-show="!detailStatus">
     <div class="row">
         <div class="col-md-4">
             <h1>Registro de Vehiculos</h1>
@@ -30,14 +30,15 @@
                         <label>Tipo Vehiculo</label>
                         <select ng-model="newVehiculo.tipoVehiculo" id="selectTipoVehiculo" class="custom-select">
                             <option value="0">Seleccione</option>
-                            <option ng-repeat ="tipo in tipoVehiculos" value="{{tipo.tipo}}"> {{tipo.nombre}}</option>
+                            <option ng-repeat="tipo in tipoVehiculos" value="{{tipo.tipo}}"> {{tipo.nombre}}</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label>Tipo Combustible</label>
                         <select ng-model="newVehiculo.tipoCombustible" id="selectTipoCombustible" class="custom-select">
                             <option value="0">Seleccione</option>
-                            <option ng-repeat="combustible in tipoCombustible" value="{{combustible.tipo}}"> {{combustible.nombre}}</option>
+                            <option ng-repeat="combustible in tipoCombustible" value="{{combustible.tipo}}">
+                                {{combustible.nombre}}</option>
                         </select>
                     </div>
                     <div class="form-group row">
@@ -86,7 +87,8 @@
                                         class="btn btn-block btn-primary">Editar</button>
                                 </div>
                                 <div class="form-group col-md-4">
-                                    <button class="btn btn-block btn-dark">Detalles</button>
+                                    <button ng-click="detailVehiculo(vehiculo)"
+                                        class="btn btn-block btn-dark">Detalles</button>
                                 </div>
                                 <div class="form-group col-md-4">
                                     <button ng-click="eliminarVehiculo(vehiculo.patente)"
@@ -101,7 +103,106 @@
 
         </div>
     </div>
+    <div class="row">
+        <div class="col-md-4">
+
+        </div>
+
+        <div class=" col-md-8">
+            <div class="row">
+                <div class=" form-group col-md-4">
+                    <button class="btn-block m-2 btn btn-dark">Consulta</button>
+                </div>
+                <div class=" form-group col-md-4">
+                    <button class="btn-block m-2 btn btn-dark">CRUD Criterios</button>
+                </div>
+                <div class="  form-group col-md-4">
+                    <button class="btn-block m-2 btn btn-dark">CRUD Tipo Combustible</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+<div class="container-fluid animated fadeInRight" id="contentDetails" ng-show="detailStatus">
+    <div class="row">
+        <div class="col-md-4 p-3">
+            <h2>Bitacora del Vehiculo</h2>
+        </div>
+        <div class="col-md-4">
+        </div>
+        <div class="col-md-4 p-2">
+            <button type="button" class="btn btn-dark btn-block" ng-click="closeDetail()"> Cerrar</button>
+        </div>
+    </div>
+    <div class="row" id="detalles">
+        <div class="col-md-4 animated fadeInRight">
+            <div class="card p-4 m-2 ">
+                <div class="card-body">
+                    <div class="form-group">
+                        <label class="col-form-label"> Fecha Final Asignacion </label>
+                        <div class="row">
+                            <input class=" form-control form-control-sm col-md-8 offset-2"
+                                value="{{bitacoraSelected.fechaFinal}}" style="background-color: white;" type="text"
+                                name="modelo" readonly>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-form-label"> Conductor </label>
+                        <div class="row">
+                            <span class="col-md-4">{{conductorRegistro.rut}}</span>
+                            <span class="col-md-4"> {{conductorRegistro.nombre}}</span>
+                            <span class="col-md-4"> {{conductorRegistro.apellido}}</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-form-label"> Inspeccion </label>
+                        <div class="row">
+                            <input class="form-control form-control-sm col-md-8 offset-2"
+                                value="{{bitacoraSelected.inspeccion}}" style="background-color: white;" type="text"
+                                name="inspeccion" readonly>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 animated fadeInRight delay-1s">
+            <div class="" id="containerRegistros">
+                <h3>Registros</h3>
+                <div class="card m-2" style="width: 100%; " ng-repeat="registro in bitacoraSelected.registro" ng-click="verInspeccion(registro)">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label> Conductor</label>
+                                <div class="form-group">
+                                    <p>{{registro.rutConductor}} {{registro.nombreConductor}} {{registro.apellidoConductor}}</p>
+                                    <p><span class="badge badge-pill badge-warning"> Fecha Inicio </span> {{registro.fechaAsignacion.desde}}</p>
+                                    <p><span class="badge badge-pill badge-warning"> Fecha Final </span> {{registro.fechaAsignacion.hasta}}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="animated fadeInRight" id="containerInspeccion" ng-show="statusVerCriterio">
+                <h4>Inspeccion</h4>
+                <div class="">
+                    <select class="custom-select" ng-click="verCriterioInspeccion()"  id="selectCriterio">
+                        <option value="0">Select</option>
+                        <option ng-repeat=" criterio in criterioSelected" value="{{criterio.nombre}}"> {{criterio.nombre}}</option>
+                    </select>
+                    <p ng-repeat = "var in verCriterio"> {{var.nombreItem}}</p>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
 <div class="modal fade" id="modalEditVehiculo" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
     aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -127,21 +228,20 @@
                 </div>
                 <div class="form-group">
                     <label>Tipo Vehiculo</label>
-                    <select  class="custom-select" id="editTipoVehiculo">
-                        <option ng-repeat ="tipo in tipoVehiculos" value="{{tipo.tipo}}"> {{tipo.nombre}}</option>
+                    <select class="custom-select" id="editTipoVehiculo">
+                        <option ng-repeat="tipo in tipoVehiculos" value="{{tipo.tipo}}"> {{tipo.nombre}}</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label>Tipo Combustible</label>
-                    <select class="custom-select" id="editTipoCombustible" >
-                        <option ng-repeat="combustible in tipoCombustible" value="{{combustible.tipo}}"> {{combustible.nombre}}</option>
+                    <select class="custom-select" id="editTipoCombustible">
+                        <option ng-repeat="combustible in tipoCombustible" value="{{combustible.tipo}}">
+                            {{combustible.nombre}}</option>
                     </select>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" ng-click="guardarModificacion()" class="btn btn-primary">Save
-                    changes</button>
+                <button type="button" ng-click="guardarModificacion()" class="btn btn-success">Guardar Cambios</button>
             </div>
         </div>
     </div>

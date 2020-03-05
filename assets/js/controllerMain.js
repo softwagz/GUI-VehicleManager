@@ -164,7 +164,7 @@ ang.controller('conductoresController', function ($scope, $http) {
             clave: ''
         }
     }
-    $scope.load = ()=>{
+    $scope.load = () => {
         $http({
             method: 'GET',
             url: 'http://localhost:4000/api/web/listarUsuarios'
@@ -175,11 +175,11 @@ ang.controller('conductoresController', function ($scope, $http) {
                     $scope.listConductores.push(conductor);
                 }
             })
-    
+
         }, function errorCallback(response) {
-    
+
             console.log("Error Conductores", response);
-    
+
         });
     }
 
@@ -235,6 +235,16 @@ ang.controller('vehiculosController', function ($scope, $http) {
     $scope.listVehiculos = [];
     $scope.vehiculosAsignados = [];
     $scope.vehiculosDisponibles = [];
+    $scope.inspeccionSelected;
+    $scope.bitacoraSelected = [];
+    $scope.conductorRegistro;
+    $scope.criterioSelected = [];
+
+    $scope.verCriterio = [{
+        nombreItem: "",
+        value: ""
+    }]
+
     $scope.newVehiculo = {
         patente: '',
         marca: '',
@@ -242,6 +252,9 @@ ang.controller('vehiculosController', function ($scope, $http) {
         tipoCombustible: '0',
         tipoVehiculo: '0'
     }
+    $scope.detailStatus = false;
+    $scope.statusVerCriterio = false;
+
     $scope.tipoVehiculos = [];
     $scope.tipoCombustible = [];
 
@@ -282,6 +295,26 @@ ang.controller('vehiculosController', function ($scope, $http) {
     }
 
     $scope.load();
+
+    $scope.bitacoraVehiculo = (patente) => {
+        $http({
+            method: 'POST',
+            url: 'http://localhost:4000/api/web/bitacoraVehiculo',
+            data: {
+                patente
+            }
+        }).then(function successCallback(response) {
+            $scope.bitacoraSelected.splice(0);
+            $scope.bitacoraSelected = response.data;
+            console.log($scope.bitacoraSelected);
+            $scope.consultarConductorRegistro($scope.bitacoraSelected.conductor);
+
+        }, function errorCallback(response) {
+
+            console.log("Error Countries", response);
+
+        });
+    }
 
     $scope.registrar = () => {
         console.log($scope.newVehiculo);
@@ -410,6 +443,91 @@ ang.controller('vehiculosController', function ($scope, $http) {
     $scope.cargarTipoCombustible();
 
     $scope.cargarTipoVehiculo();
+
+    $scope.detailVehiculo = (vehiculo) => {
+
+        $scope.detailStatus = true;
+        $scope.bitacoraVehiculo(vehiculo.patente);
+
+    }
+
+    $scope.closeDetail = () => {
+
+        $scope.detailStatus = false;
+
+    }
+
+    $scope.consultarConductorRegistro = (rut) => {
+        $http({
+            method: 'POST',
+            url: 'http://localhost:4000/api/web/buscarUsuario',
+            data: {
+                rut
+            }
+        }).then(function successCallback(response) {
+            $scope.conductorRegistro = response.data;
+            console.log(response.data);
+
+        }, function errorCallback(response) {
+
+            console.log("Error Countries", response);
+
+        });
+
+    }
+
+    $scope.verInspeccion = (registro) => {
+        var fecha = registro.fechaRegistro;
+        var patente = $scope.bitacoraSelected.patenteVehiculo;
+        $http({
+            method: 'POST',
+            url: 'http://localhost:4000/api/web/detalleInspeccion',
+            data: {
+                fecha, patente
+            }
+        }).then(function successCallback(response) {
+
+            $scope.inspeccionSelected = response.data;
+            $scope.criterioSelected = $scope.inspeccionSelected.criterios;
+            $scope.statusVerCriterio = true;
+            if (response.data == -1) {
+                $scope.verCriterio = [{
+                    nombreItem: "",
+                    value: ""
+                }]
+                alert('No se ha encontrado una inspeccion para este vehiculo');
+                $scope.statusVerCriterio = false;
+
+            }
+
+        }, function errorCallback(response) {
+
+            console.log("Error Countries", response);
+
+
+        });
+    }
+
+    $scope.verCriterioInspeccion = function () {
+
+        jquery('#selectCriterio').change(function () {
+            $scope.criterioSelected.map((val) => {
+                if (val['nombre'] == jquery(this).val()) {
+                    $scope.verCriterio = val.items;
+                }
+                if (jquery(this).val() == "0") {
+                    $scope.verCriterio = [{
+                        nombreItem: "",
+                        value: ""
+                    }]
+                }
+            });
+            console.log($scope.verCriterio);
+        })
+
+    }
+
+
 
     jquery('#selectTipoCombustible').change(function (e) {
 
