@@ -9,13 +9,20 @@
     .contenerdorList {
         padding: 5% 2%;
     }
+
+    .itemsRegistro:hover {
+        cursor: pointer;
+        background-color: rgba(185, 185, 185, 0.183);
+    }
 </style>
 
 <div class="container-fluid animated fadeInRight" id="mainVehiculos" ng-show="!detailStatus">
     <div class="row">
-        <div class="col-md-4">
-            <h1>Registro de Vehiculos</h1>
-            <div class="card mx-auto" style="width: 350px;">
+        <div class="col-md-4 mx-auto">
+            <div class="card mx-auto mt-2" style="width: 350px;">
+                <div class="card-header">
+                    <h4> Registro de Vehiculos</h4>
+                </div>
                 <div class="card-body">
                     <div class="form-group">
                         <input type="text" ng-model="newVehiculo.patente" class="form-control" placeholder="Patente">
@@ -41,33 +48,39 @@
                                 {{combustible.nombre}}</option>
                         </select>
                     </div>
+                </div>
+                <div class="card-footer">
                     <div class="form-group row">
-                        <div class="form-group col-md-6">
-                            <button ng-click="registrar()" class=" btn btn-block btn-success">Guardar</button>
+                        <div class="col-md-6">
+                            <button ng-click="registrar()" class=" btn btn-block btn-secondary">Guardar</button>
+
                         </div>
-                        <div class="form-group col-md-6">
+                        <div class="col-md-6">
                             <button ng-click="limpiar()" class="btn btn btn-block btn-primary">Limpiar</button>
+
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
         <div class="col-md-8">
             Listado de Vehiculos
-            <div class="row">
-                <div class="form-group col-md-4">
-                    <label>Todos </label> <input class="custom-radio" type="radio" name="viewOnly" id="" checked>
-                </div>
-                <div class="form-group col-md-4">
-                    <label>Disponibles </label> <input class="custom-radio" type="radio" name="viewOnly" id="">
-                </div>
-                <div class="form-group col-md-4">
-                    <label for="">Asignados </label> <input class="custom-radio" type="radio" name="viewOnly" id="">
-                </div>
-
-            </div>
             <div class="contenerdorList">
+                <div class="row">
+                    <div class="form-group col-md-4">
+                        <label>Todos </label> <input ng-click="verASignadosDisponibles(0)"
+                            class="custom-radio selectRadio" type="radio" name="viewOnly" id="" checked>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label>Disponibles </label> <input ng-click="verASignadosDisponibles(1)"
+                            class="custom-radio selectRadio" type="radio" name="viewOnly" id="">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="">Asignados </label> <input ng-click="verASignadosDisponibles(2)"
+                            class="custom-radio selectRadio" type="radio" name="viewOnly" id="">
+                    </div>
+
+                </div>
                 <table class="table table-hover table-responsive-lg">
                     <thead>
                         <td> Patente </td>
@@ -75,8 +88,52 @@
                         <td> Modelo </td>
                         <td> Opciones </td>
                     </thead>
-                    <tbody class="">
+                    <tbody ng-show="listSelected == 0" class="">
                         <tr ng-repeat="vehiculo in listVehiculos">
+                            <td>{{vehiculo.patente}}</td>
+                            <td>{{vehiculo.marca}}</td>
+                            <td>{{vehiculo.modelo}}</td>
+                            <td class="row">
+                                <div class="form-group col-md-4">
+                                    <button ng-click="editarVehiculo(vehiculo)" data-toggle="modal"
+                                        data-target="#modalEditVehiculo"
+                                        class="btn btn-block btn-primary">Editar</button>
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <button ng-click="detailVehiculo(vehiculo)"
+                                        class="btn btn-block btn-dark">Detalles</button>
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <button ng-click="eliminarVehiculo(vehiculo.patente)"
+                                        class="btn btn-block btn-warning">Eliminar</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tbody ng-show="listSelected == 1" class="">
+                        <tr ng-repeat="vehiculo in listDisponible">
+                            <td>{{vehiculo.patente}}</td>
+                            <td>{{vehiculo.marca}}</td>
+                            <td>{{vehiculo.modelo}}</td>
+                            <td class="row">
+                                <div class="form-group col-md-4">
+                                    <button ng-click="editarVehiculo(vehiculo)" data-toggle="modal"
+                                        data-target="#modalEditVehiculo"
+                                        class="btn btn-block btn-primary">Editar</button>
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <button ng-click="detailVehiculo(vehiculo)"
+                                        class="btn btn-block btn-dark">Detalles</button>
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <button ng-click="eliminarVehiculo(vehiculo.patente)"
+                                        class="btn btn-block btn-warning">Eliminar</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tbody ng-show="listSelected == 2" class="">
+                        <tr ng-repeat="vehiculo in listAsignados">
                             <td>{{vehiculo.patente}}</td>
                             <td>{{vehiculo.marca}}</td>
                             <td>{{vehiculo.modelo}}</td>
@@ -103,6 +160,7 @@
 
         </div>
     </div>
+
     <div class="row">
         <div class="col-md-4">
 
@@ -128,15 +186,18 @@
         <div class="col-md-4 p-3">
             <h2>Bitacora del Vehiculo</h2>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-6">
         </div>
-        <div class="col-md-4 p-2">
-            <button type="button" class="btn btn-dark btn-block" ng-click="closeDetail()"> Cerrar</button>
+        <div class="col-md-2 p-2">
+            <button type="button" class="btn btn-dark btn-block" ng-click="closeDetail()"> volver atras</button>
         </div>
     </div>
     <div class="row" id="detalles">
         <div class="col-md-4 animated fadeInRight">
-            <div class="card p-4 m-2 ">
+            <div class="card m-2 ">
+                <div class="card-header">
+                    <h3>Ultimos detalles de Asignacion</h3>
+                </div>
                 <div class="card-body">
                     <div class="form-group">
                         <label class="col-form-label"> Fecha Final Asignacion </label>
@@ -154,13 +215,19 @@
                             <span class="col-md-4"> {{conductorRegistro.apellido}}</span>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label class="col-form-label"> Inspeccion </label>
-                        <div class="row">
-                            <input class="form-control form-control-sm col-md-8 offset-2"
-                                value="{{bitacoraSelected.inspeccion}}" style="background-color: white;" type="text"
-                                name="inspeccion" readonly>
-                        </div>
+
+                </div>
+                <div class="card-footer">
+                    <label class="col-form-label"> Inspeccion </label>
+                    <div class="row">
+                        <input ng-show="bitacoraSelected.inspeccion"
+                            class="form-control form-control-sm col-md-8 offset-2" value="Inspeccion Realizada"
+                            style="background-color: rgb(21, 253, 0);" type="text" name="inspeccion" readonly>
+
+                        <input ng-show="!bitacoraSelected.inspeccion"
+                            class="animated infinite bounce form-control form-control-sm col-md-8 offset-2"
+                            value="Inspeccion Pendiente" style="background-color: rgb(255, 217, 0);" type="text"
+                            name="inspeccion" readonly>
                     </div>
                 </div>
             </div>
@@ -168,15 +235,19 @@
         <div class="col-md-4 animated fadeInRight delay-1s">
             <div class="" id="containerRegistros">
                 <h3>Registros</h3>
-                <div class="card m-2" style="width: 100%; " ng-repeat="registro in bitacoraSelected.registro" ng-click="verInspeccion(registro)">
+                <div class="card m-2 itemsRegistro" style="width: 100%; "
+                    ng-repeat="registro in bitacoraSelected.registro" ng-click="verInspeccion(registro)">
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-12">
                                 <label> Conductor</label>
                                 <div class="form-group">
-                                    <p>{{registro.rutConductor}} {{registro.nombreConductor}} {{registro.apellidoConductor}}</p>
-                                    <p><span class="badge badge-pill badge-warning"> Fecha Inicio </span> {{registro.fechaAsignacion.desde}}</p>
-                                    <p><span class="badge badge-pill badge-warning"> Fecha Final </span> {{registro.fechaAsignacion.hasta}}</p>
+                                    <p>{{registro.rutConductor}} {{registro.nombreConductor}}
+                                        {{registro.apellidoConductor}}</p>
+                                    <p><span class="badge badge-pill badge-warning"> Fecha Inicio </span>
+                                        {{registro.fechaAsignacion.desde}}</p>
+                                    <p><span class="badge badge-pill badge-warning"> Fecha Final </span>
+                                        {{registro.fechaAsignacion.hasta}}</p>
                                 </div>
                             </div>
                         </div>
@@ -188,11 +259,12 @@
             <div class="animated fadeInRight" id="containerInspeccion" ng-show="statusVerCriterio">
                 <h4>Inspeccion</h4>
                 <div class="">
-                    <select class="custom-select" ng-click="verCriterioInspeccion()"  id="selectCriterio">
+                    <select class="custom-select" ng-click="verCriterioInspeccion()" id="selectCriterio">
                         <option value="0">Select</option>
-                        <option ng-repeat=" criterio in criterioSelected" value="{{criterio.nombre}}"> {{criterio.nombre}}</option>
+                        <option ng-repeat=" criterio in criterioSelected" value="{{criterio.nombre}}">
+                            {{criterio.nombre}}</option>
                     </select>
-                    <p ng-repeat = "var in verCriterio"> {{var.nombreItem}}</p>
+                    <p ng-repeat="var in verCriterio"> {{var.nombreItem}} Estado: {{var.value}}</p>
 
                 </div>
             </div>

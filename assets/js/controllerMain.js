@@ -1,16 +1,8 @@
-
-// Menu Laterañ
-
-$(document).ready(function () {
-    $("#menu-toggle").click(function () {
-        $("#wrapper").toggleClass("toggled");
-    });
-});
 //Controlador
 
 const ang = angular.module("App", ["ngRoute"]);
 
-// Configurando Rutas
+// registro de rutas para ngRoute, y los nombres de los controladores
 
 ang.config(function ($routeProvider) {
     $routeProvider
@@ -28,7 +20,8 @@ ang.config(function ($routeProvider) {
             controller: "conductoresController"
         })
         .when("/asignacion", {
-            templateUrl: "./assets/Templates/asignacion.html"
+            templateUrl: "./assets/Templates/asignacion.html",
+            controller: "asignacionController"
         })
         .when("/vehiculos", {
             templateUrl: "./assets/Templates/vehiculos.html",
@@ -38,7 +31,7 @@ ang.config(function ($routeProvider) {
 
 const jquery = $;
 
-
+//Definicion de los controladores
 ang.controller('conductoresController', function ($scope, $http) {
     $scope.listConductores = [];
     $scope.search = '';
@@ -58,8 +51,8 @@ ang.controller('conductoresController', function ($scope, $http) {
         usuario: '',
         clave: ''
     }
-
-    $scope.buscar = () => {
+    //permite buscar un conductor, esta funcion no esta implementada aun
+    $scope.buscar = (rut) => {
         $http({
             method: 'POST',
             url: 'http://localhost:4000/api/web/buscarUsuario',
@@ -79,7 +72,7 @@ ang.controller('conductoresController', function ($scope, $http) {
 
         });
     }
-
+    //permite abrir el modal para modificar el conductor
     $scope.editarConductor = (conductor) => {
         console.log(conductor.nombre);
         $scope.conductorSelected = {
@@ -92,7 +85,7 @@ ang.controller('conductoresController', function ($scope, $http) {
         }
         console.log(conductor)
     }
-
+    //elimina logicamente un conductor, para mantener la integridad del regsitro
     $scope.deleteConductor = (rut) => {
         $http({
             method: 'PUT',
@@ -113,6 +106,7 @@ ang.controller('conductoresController', function ($scope, $http) {
 
         });
     }
+    //guarda los cambios hechos para el conductor mostrado en el modal
     $scope.guardarCambiosConductor = () => {
         $http({
             method: 'PUT',
@@ -131,7 +125,7 @@ ang.controller('conductoresController', function ($scope, $http) {
 
         });
     }
-
+    //permite registrar un nuevo conductor
     $scope.agregarUsuario = () => {
         $http({
             method: 'POST',
@@ -154,7 +148,7 @@ ang.controller('conductoresController', function ($scope, $http) {
 
 
     }
-
+    //limpia el formulario de registro
     $scope.clear = () => {
         $scope.newUser = {
             rut: '',
@@ -164,6 +158,7 @@ ang.controller('conductoresController', function ($scope, $http) {
             clave: ''
         }
     }
+    //carga todos los conductores
     $scope.load = () => {
         $http({
             method: 'GET',
@@ -190,55 +185,66 @@ ang.controller('conductoresController', function ($scope, $http) {
 
 ang.controller('homeController', function ($scope, $http) {
     $scope.listConductores = [];
-    $scope.conductoresDisponibles = [];
-    $scope.conductoresAsignados = []
-    $scope.load = () => {
+    $scope.vehiculosAsignados = [];
+    $scope.vehiculosDisponibles = []
+    //carga los vehiculos disponibles
+    $scope.loadAsignados = () => {
         $http({
             method: 'GET',
-            url: 'http://localhost:4000/api/web/listarUsuarios'
+            url: 'http://localhost:4000/api/web/vehiculosAsignados'
         }).then(function successCallback(response) {
-            $scope.listConductores.splice(0);
-            response.data.map((conductor) => {
-                if (conductor['status'] == true) {
-                    $scope.listConductores.push(conductor);
-                    console.log("Success", response);
+            $scope.vehiculosAsignados.splice(0);
+            $scope.vehiculosAsignados = response.data;
 
-                }
-            });
-            $scope.listConductores.map(
-                (driver) => {
-                    if (!driver['estadoAsignacion']) {
-                        $scope.conductoresDisponibles.push(driver)
-                    } else {
-                        $scope.conductoresAsignados.push(driver);
-                    }
-                }
-            );
-            console.log($scope.conductoresAsignados, $scope.conductoresDisponibles);
 
         }, function errorCallback(response) {
 
-            console.log("Error Countries", response);
+            console.log("Error", response);
 
         });
-
+        console.log($scope.vehiculosAsignados);
 
     }
-    $scope.load();
+    //carga los vehiculos asignados, la fecha vacia para obtener todos a la fecha actual
+    $scope.loadDisponibles = (fecha) => {
+        $http({
+            method: 'POST',
+            url: 'http://localhost:4000/api/web/vehiculosDisponible',
+            data: {
+                fecha: fecha
+            }
+        }).then(function successCallback(response) {
+            $scope.vehiculosDisponibles.splice(0);
+            $scope.vehiculosDisponibles = response.data;
+            console.log(response);
 
 
+        }, function errorCallback(response) {
+
+            console.log("Error", response);
+
+        });
+        console.log($scope.vehiculosDisponibles);
+    }
+
+
+    $scope.loadAsignados();
+    $scope.loadDisponibles('');
 
 });
 
 ang.controller('vehiculosController', function ($scope, $http) {
 
     $scope.listVehiculos = [];
-    $scope.vehiculosAsignados = [];
-    $scope.vehiculosDisponibles = [];
+    $scope.listAsignados = [];
+    $scope.listDisponible = [];
+
     $scope.inspeccionSelected;
-    $scope.bitacoraSelected = [];
+    $scope.bitacoraSelected;
     $scope.conductorRegistro;
     $scope.criterioSelected = [];
+
+    $scope.listSelected = 0;
 
     $scope.verCriterio = [{
         nombreItem: "",
@@ -258,8 +264,6 @@ ang.controller('vehiculosController', function ($scope, $http) {
     $scope.tipoVehiculos = [];
     $scope.tipoCombustible = [];
 
-    $scope.value;
-    $scope.value2;
 
     $scope.vehiculoSelected = {
         _id: '',
@@ -271,7 +275,7 @@ ang.controller('vehiculosController', function ($scope, $http) {
         manutencion: false,
         status: true
     }
-
+    //carga todos los vehiculos
     $scope.load = () => {
         $http({
             method: 'GET',
@@ -282,8 +286,8 @@ ang.controller('vehiculosController', function ($scope, $http) {
                 if (vehiculo['status']) {
                     $scope.listVehiculos.push(vehiculo);
                     console.log("Success", response);
-
                 }
+
             });
         }, function errorCallback(response) {
 
@@ -293,9 +297,46 @@ ang.controller('vehiculosController', function ($scope, $http) {
 
 
     }
-
     $scope.load();
+    //carga los vehiculos asignados
+    $scope.loadAsignados = () => {
+        $http({
+            method: 'GET',
+            url: 'http://localhost:4000/api/web/vehiculosAsignados'
+        }).then(function successCallback(response) {
+            $scope.listAsignados.splice(0);
+            $scope.listAsignados = response.data;
+            console.log('asignados ', $scope.listAsignados);
+        }, function errorCallback(response) {
 
+            console.log("Error", response);
+
+        });
+    }
+    $scope.loadAsignados();
+
+    //carga los vehiculos disponibles
+    $scope.loadDisponibles = (fecha) => {
+        $http({
+            method: 'POST',
+            url: 'http://localhost:4000/api/web/vehiculosDisponible',
+            data: {
+                fecha: fecha
+            }
+        }).then(function successCallback(response) {
+            $scope.listDisponible.splice(0);
+            $scope.listDisponible = response.data;
+            console.log('disponibles ', $scope.listDisponible);
+        }, function errorCallback(response) {
+
+            console.log("Error", response);
+
+        });
+    }
+
+    $scope.loadDisponibles('');
+
+    //consulta a la base de datos para obtener la bitacora del vehiculo y su respectivos detalles
     $scope.bitacoraVehiculo = (patente) => {
         $http({
             method: 'POST',
@@ -304,20 +345,18 @@ ang.controller('vehiculosController', function ($scope, $http) {
                 patente
             }
         }).then(function successCallback(response) {
-            $scope.bitacoraSelected.splice(0);
             $scope.bitacoraSelected = response.data;
-            console.log($scope.bitacoraSelected);
             $scope.consultarConductorRegistro($scope.bitacoraSelected.conductor);
 
         }, function errorCallback(response) {
 
-            console.log("Error Countries", response);
+            console.log("Error", response);
 
         });
     }
 
+    //registra un nuevo vehiculo
     $scope.registrar = () => {
-        console.log($scope.newVehiculo);
         $http({
             method: 'POST',
             url: 'http://localhost:4000/api/web/agregarVehiculo',
@@ -328,17 +367,20 @@ ang.controller('vehiculosController', function ($scope, $http) {
                 alert('Registro Exitoso');
                 $scope.load();
                 $scope.limpiar();
+                $scope.loadDisponibles('');
+                $scope.loadAsignados();
             } else {
                 alert('La Patente ya esta registrada');
             }
         }, function errorCallback(response) {
 
-            console.log("Error Countries", response);
+            console.log("Error ", response);
 
 
         });
     }
 
+    //limpia los campos del formulario de registro
     $scope.limpiar = () => {
         $scope.newVehiculo = {
             patente: '',
@@ -348,8 +390,8 @@ ang.controller('vehiculosController', function ($scope, $http) {
         }
     }
 
+    //permite eliminar el vehiculo, solo logicamente. para mantener la integridad del registro
     $scope.eliminarVehiculo = (patente) => {
-        console.log(patente);
         $http({
             method: 'PUT',
             url: 'http://localhost:4000/api/web/borrarVehiculo',
@@ -365,20 +407,21 @@ ang.controller('vehiculosController', function ($scope, $http) {
             }
         }, function errorCallback(response) {
 
-            console.log("Error Countries", response);
+            console.log("Error", response);
 
 
         });
     }
 
+    //permite abrir el modal y envia los datos del vehiculo a este.
     $scope.editarVehiculo = (vehiculo) => {
         $scope.vehiculoSelected = vehiculo;
-        console.log($scope.vehiculoSelected);
         jquery('#editTipoVehiculo').val($scope.vehiculoSelected.tipoVehiculo);
         jquery('#editTipoCombustible').val($scope.vehiculoSelected.tipoCombustible);
 
     }
 
+    //guarda los cambios hechos en el modal a el vehiculo
     $scope.guardarModificacion = () => {
 
         $http({
@@ -386,7 +429,6 @@ ang.controller('vehiculosController', function ($scope, $http) {
             url: 'http://localhost:4000/api/web/modificarVehiculo',
             data: $scope.vehiculoSelected
         }).then(function successCallback(response) {
-
             $scope.load();
             console.log("Success", response);
             if (response.data == -1) {
@@ -398,12 +440,12 @@ ang.controller('vehiculosController', function ($scope, $http) {
 
         }, function errorCallback(response) {
 
-            console.log("Error Countries", response);
+            console.log("Error", response);
 
         });
 
     }
-
+    //consulta la base de datos para ver los tipos de vehiculos disponibles
     $scope.cargarTipoVehiculo = () => {
 
         $http({
@@ -422,6 +464,7 @@ ang.controller('vehiculosController', function ($scope, $http) {
 
     }
 
+    //consulta la base de datos para ver los tipo de combustibles disponibles
     $scope.cargarTipoCombustible = () => {
 
         $http({
@@ -444,6 +487,7 @@ ang.controller('vehiculosController', function ($scope, $http) {
 
     $scope.cargarTipoVehiculo();
 
+    //permite cargar la bitacora del vehiculo
     $scope.detailVehiculo = (vehiculo) => {
 
         $scope.detailStatus = true;
@@ -451,12 +495,14 @@ ang.controller('vehiculosController', function ($scope, $http) {
 
     }
 
+    //atributo que me permite alternar entre la vista de detalles
     $scope.closeDetail = () => {
 
         $scope.detailStatus = false;
 
     }
 
+    //permite cargar los datos del ultimo conductor registrado en la bitacora
     $scope.consultarConductorRegistro = (rut) => {
         $http({
             method: 'POST',
@@ -466,16 +512,16 @@ ang.controller('vehiculosController', function ($scope, $http) {
             }
         }).then(function successCallback(response) {
             $scope.conductorRegistro = response.data;
-            console.log(response.data);
 
         }, function errorCallback(response) {
 
-            console.log("Error Countries", response);
+            console.log("Error", response);
 
         });
 
     }
 
+    //realiza una consulta para encontrar la inspeccion asosiada a ese registro
     $scope.verInspeccion = (registro) => {
         var fecha = registro.fechaRegistro;
         var patente = $scope.bitacoraSelected.patenteVehiculo;
@@ -502,13 +548,14 @@ ang.controller('vehiculosController', function ($scope, $http) {
 
         }, function errorCallback(response) {
 
-            console.log("Error Countries", response);
+            console.log("Error", response);
 
 
         });
     }
 
-    $scope.verCriterioInspeccion = function () {
+    //permite alternar la vista para el criterio seleccionado
+    $scope.verCriterioInspeccion = (val) => {
 
         jquery('#selectCriterio').change(function () {
             $scope.criterioSelected.map((val) => {
@@ -527,18 +574,27 @@ ang.controller('vehiculosController', function ($scope, $http) {
 
     }
 
+    //carga la lista de vehiculos asignados y disponibles
+    $scope.verASignadosDisponibles = (val) => {
+
+        $scope.listSelected = val;
+
+    }
 
 
+    //permite saber que tipo de combustible se eligio
     jquery('#selectTipoCombustible').change(function (e) {
 
         $scope.newVehiculo.tipoCombustible = jquery(this).val()
     });
 
+    //permite saber que tipo de vehiculo se eligio
     jquery('#selectTipoVehiculo').change(function (e) {
 
         $scope.newVehiculo.tipoVehiculo = jquery(this).val()
     });
 
+    //permite modificar el tipo de vehiculo
     jquery('#editTipoVehiculo').change(function (e) {
 
         $scope.vehiculoSelected['tipoVehiculo'] = jquery(this).val();
@@ -547,12 +603,248 @@ ang.controller('vehiculosController', function ($scope, $http) {
 
     })
 
+    //permite modificar el tipo de combustible
     jquery('#editTipoCombustible').change(function (e) {
 
         $scope.vehiculoSelected['tipoCombustible'] = jquery(this).val();
         console.log($scope.vehiculoSelected);
 
     })
+
+});
+
+ang.controller('asignacionController', function ($scope, $http) {
+
+    $scope.patentesDisponibles = [];
+    $scope.usuariosDisponibles = [];
+    $scope.patenteSelected = {
+        _id: "",
+        patente: "",
+        marca: "",
+        modelo: "",
+        tipoVehiculo: "",
+        tipoCombustible: "",
+        manutencion: true,
+        status: true
+    };
+
+    $scope.conductorSelected = {
+        _id: "",
+        rut: "",
+        nombre: "",
+        apellido: "",
+        usuario: "",
+        clave: "",
+        estadoAsignacion: false,
+        patenteAsignada: "",
+        status: true
+    };
+    $scope.bitacoraSelected;
+
+    $scope.patente;
+    $scope.rut;
+    //carga los vehiculos disponibles
+    $scope.loadDisponibles = (fecha) => {
+        $http({
+            method: 'POST',
+            url: 'http://localhost:4000/api/web/vehiculosDisponible',
+            data: {
+                fecha: fecha
+            }
+        }).then(function successCallback(response) {
+            $scope.patentesDisponibles.splice(0);
+            $scope.patentesDisponibles = response.data;
+            console.log('disponibles ', response);
+
+
+        }, function errorCallback(response) {
+
+            console.log("Error", response);
+
+        });
+    }
+
+    $scope.loadDisponibles('');
+    //carga los usuarios disponibles
+    $scope.loadUsuarios = () => {
+        $http({
+            method: 'GET',
+            url: 'http://localhost:4000/api/web/listarUsuarios'
+        }).then(function successCallback(response) {
+            $scope.usuariosDisponibles.splice(0);
+            response.data.map((user) => {
+                if (!user['estadoAsignacion']) {
+                    $scope.usuariosDisponibles.push(user);
+                    console.log($scope.usuariosDisponibles)
+                }
+            })
+            console.log(response);
+
+
+        }, function errorCallback(response) {
+
+            console.log("Error", response);
+
+        });
+    }
+    $scope.loadUsuarios();
+
+
+    $scope.update = () => {
+        //Funcion vacia para indicarle a Angularjs que refresque los cambios
+
+    }
+
+    //obtengo la bitacora del vehiculo, a su mismo tiempo contiene el registro de movimiento
+    $scope.obtenerBitacora = (patente) => {
+
+        $http({
+            method: 'POST',
+            url: 'http://localhost:4000/api/web/bitacoraVehiculo',
+            data: {
+                patente: patente
+            }
+        }).then(function successCallback(response) {
+            $scope.bitacoraSelected = response.data;
+            console.log($scope.bitacoraSelected);
+
+
+        }, function errorCallback(response) {
+
+            console.log("Error", response);
+
+        });
+
+
+        //agregamos una inspeccion
+
+    }
+
+    //crea el registro cuando es llamada en actualizar bitacora
+    $scope.crearInspeccion = (fechaRegistro, patente) => {
+
+        $http({
+            method: 'POST',
+            url: 'http://localhost:4000/api/web/crearInspeccion',
+            data:{
+                fechaRegistro,
+                patente
+            }
+        }).then(function successCallback(response) {
+            
+            console.log('Inspeccion Creada',response);
+
+
+        }, function errorCallback(response) {
+
+            console.log("Error", response);
+
+        });
+    }
+    $scope.limpiar = ()=>{
+        $scope.patenteSelected = {
+            _id: "",
+            patente: "",
+            marca: "",
+            modelo: "",
+            tipoVehiculo: "",
+            tipoCombustible: "",
+            manutencion: true,
+            status: true
+        };
+        jquery('#selectConductor').val('0');
+        jquery('#selectPatente').val('0');
+
+
+    }
+
+    //asigna el vehiculo, el conductor y crea el registro de inspeccion
+    $scope.actualizarBitacora = () => {
+        console.log('bitacora Selected', $scope.bitacoraSelected);
+
+        $scope.bitacoraSelected['inspeccion'] = false;
+        $scope.bitacoraSelected['asignado'] = true;
+        $scope.bitacoraSelected['conductor'] = $scope.conductorSelected['rut'];
+        var fecha = new Date();
+        var dia = fecha.getDate() <= 9 ? '0' + fecha.getDate() : fecha.getDate();
+        var mes = (fecha.getMonth() + 1) <= 9 ? '0' + (fecha.getMonth() + 1) : (fecha.getMonth() + 1);
+        var fechaInicio = fecha.getFullYear() + '-' + mes + '-' + dia;
+        var fechaFinalizacion = jquery('#fechaFinal').val();
+        $scope.bitacoraSelected['fechaFinal']=fechaFinalizacion;
+        var newRegistro = {
+            rutConductor: $scope.conductorSelected['rut'],
+            nombreConductor: $scope.conductorSelected['nombre'],
+            apellidoConductor: $scope.conductorSelected['apellido'],
+            fechaRegistro: fechaInicio,
+            fechaAsignacion: { desde: fechaInicio, hasta: fechaFinalizacion }
+        }
+
+
+        $scope.bitacoraSelected['registro'].push(newRegistro);
+        $scope.crearInspeccion(fechaInicio,$scope.bitacoraSelected['patenteVehiculo']);
+        //Realizando metodo POST
+
+        $http({
+            method: 'POST',
+            url: 'http://localhost:4000/api/web/asignarVehiculo',
+            data:$scope.bitacoraSelected
+        }).then(function successCallback(response) {
+             console.log(response.data);
+             $scope.loadUsuarios();
+             $scope.loadDisponibles('');
+             alert('Asignacion Exitosa');
+             $scope.limpiar()
+
+
+
+        }, function errorCallback(response) {
+
+            console.log("Error", response);
+
+        });
+
+        console.log('nueva Bitacora', $scope.bitacoraSelected)
+        console.log('registro', newRegistro);
+    }
+
+    //funcion que permite indicar que conductor he seleccionado
+    jquery('#selectConductor').change(function () {
+        $scope.rut = jquery(this).val();
+        $scope.usuariosDisponibles.map((conductor) => {
+            if (conductor['rut'] == $scope.rut) {
+                $scope.conductorSelected = conductor;
+            }
+        });
+
+    });
+
+    //funcion que permite indicar que patente he elegido
+    jquery('#selectPatente').change(function () {
+
+        $scope.patente = jquery(this).val();
+        $scope.patentesDisponibles.map((vehiculo) => {
+            if (vehiculo['patente'] == $scope.patente) {
+                
+                $scope.patenteSelected = vehiculo;
+                console.log($scope.patenteSelected);
+                $scope.obtenerBitacora(vehiculo['patente']);
+
+            }
+
+        });
+
+    });
+
+})
+
+
+
+//funcion responsable del menu lateral
+
+$(document).ready(function () {
+    $("#menu-toggle").click(function () {
+        $("#wrapper").toggleClass("toggled");
+    });
 
 });
 

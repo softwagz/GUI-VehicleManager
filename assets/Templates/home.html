@@ -111,33 +111,30 @@
     <div class=" body">
         <div class="container-asignados" id="assig">
             <h3 class="textAsignado">ASIGNADOS</h3>
-            <div class="content-asignados" ng-repeat="conductor in conductoresAsignados">
+            <div class="content-asignados" ng-repeat="vehiculo in vehiculosAsignados">
                 <img src="./assets/cars.jpg" width="60px" height="50px" class="imagenVehiculo">
                 <div class="detailVehiculo">
-                    <p><strong>RUT </strong> {{conductor.rut}}</p>
-                    <p><strong>Nombre </strong>{{conductor.nombre}}</p>
-                    <p><strong>Apellido </strong>{{conductor.apellido}}</p>
-                    <p><strong>Usuario </strong>{{conductor.usuario}}</p>
-                    <p><Strong>Clave </Strong>{{conductor.clave}}</p>
+                    <p><strong>PATENTE </strong> {{vehiculo.patente}}</p>
+                    <p><strong>MARCA </strong>{{vehiculo.marca}}</p>
+                    <p><strong>MODELO </strong>{{vehiculo.modelo}}</p>
+
                 </div>
             </div>
         </div>
         <div class="container-disponibles" id="disp">
             <h3 class="textDisponible">DISPONIBLES</h3>
-            <div class="content-disponibles" ng-repeat="conductor in conductoresDisponibles">
+            <div class="content-disponibles" ng-repeat="vehiculo in vehiculosDisponibles">
                 <img src="./assets/cars.jpg" width="60px" height="50px" class="imagenVehiculo">
                 <div class="detailVehiculo">
-                    <p><strong>RUT </strong> {{conductor.rut}}</p>
-                    <p><strong>Nombre </strong>{{conductor.nombre}}</p>
-                    <p><strong>Apellido </strong>{{conductor.apellido}}</p>
-                    <p><strong>Usuario </strong>{{conductor.usuario}}</p>
-                    <p><Strong>Clave </Strong>{{conductor.clave}}</p>
+                    <p><strong>PATENTE </strong> {{vehiculo.patente}}</p>
+                    <p><strong>MARCA </strong>{{vehiculo.marca}}</p>
+                    <p><strong>MODELO </strong>{{vehiculo.modelo}}</p>
                 </div>
             </div>
 
         </div>
     </div>
     <footer class="foo">
-        <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Modi, excepturi.</p>
+        <h3>footer</h3>
     </footer>
 </div>
