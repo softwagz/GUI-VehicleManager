@@ -157,8 +157,8 @@
         <div class="container-registro" id="assig">
             <div class="content">
                 <div class="formRegistro">
-                    <input ng-model="newUser.rut" placeholder="RUT" type="text" class="form-control rut input" id="rut"
-                        name="rut" required />
+                    <input ng-model="newUser.rut" placeholder="RUT" type="number" class="form-control rut input"
+                        id="rut" name="rut" required />
 
 
 
@@ -179,11 +179,9 @@
                     <input ng-model="newUser.clave" placeholder="Clave" type="text" class="form-control clave input"
                         id="clave" name="clave" required />
 
-                    <div class="input">
-
-                        <button type="button" class="btn btn-primary" ng-click="agregarUsuario()">Save</button>
-                        <button type="button" ng-click="clear()" class="btn btn-danger">Cancel</button>
-
+                    <div >
+                        <button type="button" class="btn btn-warning" ng-click="agregarUsuario()">Registrar</button>
+                        <button type="button" ng-click="clear()" class="btn btn-success">Limpiar</button>
                     </div>
                 </div>
             </div>
@@ -200,7 +198,7 @@
                     <p><Strong>Clave </Strong>{{conductor.clave}}</p>
                 </div>
                 <div class="opcines-user">
-                    <button ng-click="deleteConductor(conductor.rut)" class="btn btn-block btn-warning">
+                    <button ng-click="deleteConductor(conductor.rut)" class="btn btn-block btn-secondary">
                         Eliminar</button>
                     <button ng-click="editarConductor(conductor)" data-toggle="modal" data-target="#modalEditarCondutor"
                         class="btn btn-block btn-primary">Editar</button>
@@ -210,9 +208,7 @@
         </div>
 
     </div>
-    <footer class="foo">
-        <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Modi, excepturi.</p>
-    </footer>
+
 
 </div>
 
@@ -223,7 +219,7 @@
     aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header bg-secondary">
                 <h5 class="modal-title" id="exampleModalLabel">
                     Editar Conductor
                 </h5>
@@ -233,26 +229,30 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
+                    <label>Nombre</label>
                     <input class="form-control" ng-model="conductorSelected.nombre" type="text" name="nombre"
                         id="nombre" value="{{conductorSelected.nombre}}">
                 </div>
                 <div class="form-group">
+                    <label>Apellido</label>
                     <input class="form-control" ng-model="conductorSelected.apellido" type="text" name="apellido"
                         id="apellido" value="{{conductorSelected.apellido}}">
                 </div>
                 <div class="form-group">
+                    <label>Usuario</label>
                     <input class="form-control" ng-model="conductorSelected.usuario" type="text" name="usuario"
                         id="usuario" value="{{conductorSelected.usuario}}">
                 </div>
                 <div class="form-group">
+                    <label> Clave</label>
                     <input class="form-control" ng-model="conductorSelected.clave" type="text" name="clave" id="clave"
                         value="{{conductorSelected.clave}}">
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" ng-click="guardarCambiosConductor()" class="btn btn-primary">Save
-                    changes</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" ng-click="guardarCambiosConductor()" class="btn btn-primary">Guardar
+                    Cambios</button>
             </div>
         </div>
     </div>
